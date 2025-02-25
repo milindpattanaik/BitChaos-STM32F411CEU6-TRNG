@@ -10,7 +10,7 @@ The circuit consists of:
 - **USB Type-C for Power & Communication**
 
 ### **Schematic** 
-![TRNG Schematic 1](/readme-images/TRNGcircuitpicture.PNG) 
+![TRNG Schematic 1](/readme-images/TRNGcircuitpicture.png) 
 
 ![TRNG Schematic 2](/readme-images/TRNGhardwarepicture.jpeg) 
 
