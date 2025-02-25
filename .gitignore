@@ -1,0 +1,43 @@
+# Build directories
+build/
+_build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Debug/
+Release/
+build.ninja
+compile_commands.json
+
+# Compiled binaries
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.out
+*.lst
+*.axf
+
+# Debugging and IDE files
+*.d
+*.dep
+*.su
+*.log
+*.sdf
+*.tss
+*.uvoptx
+*.uvguix
+*.cproject
+*.project
+*.launch
+
+# STM32CubeMX generated files
+MXProjectData.xml
+mx.scratch
+.metadata/
+.settings/
+
+# VSCode specific                                                   
+.vscode/
+*.code-workspace
