@@ -284,7 +284,7 @@ uint16_t read_ring_oscillator(void)
   random_value |= HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) << 6;
   random_value |= HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) << 7;
   random_value |= HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) << 8;
-
+  random_value |= HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4) << 9;
   return random_value;
 }
 
