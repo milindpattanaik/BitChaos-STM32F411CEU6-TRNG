@@ -18,14 +18,15 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include "usb_device.h"
 #include "usbd_cdc_if.h"
 #include "string.h"
 #include "stdio.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
+#include "stddef.h"
+#include "unistd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,18 +48,24 @@
 
 /* USER CODE BEGIN PV */
 uint8_t usb_rx_buffer;  // Single-byte buffer for receiving data
+
+uint16_t avg_number = 50;
+char usb_tx_avg_buffer[30];
+
+uint8_t msg[] = {0x1, 0x2, 0x3, 0x4};
+uint8_t encrypted[4] = {0};
+uint8_t decrypted[4] = {0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+/* USER CODE BEGIN PFP */
 uint16_t read_ring_oscillator(void);
 uint16_t get_avg(uint16_t num);
 uint32_t key_gen32(uint16_t trng);
 void encrypt(uint8_t msg[], uint8_t buffer[], uint16_t len, uint32_t key);
 void decrypt(uint8_t cipher[], uint8_t buffer[], uint16_t len, uint32_t key);
-/* USER CODE BEGIN PFP */
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -99,17 +106,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   HAL_Delay(10000);
-  uint16_t avg_number = 50;
-  char usb_tx_avg_buffer[30];
 
   uint16_t avg = get_avg(avg_number);
 
-  sprintf(usb_tx_avg_buffer, "Average: %d\r\n", avg);
-  CDC_Transmit_FS((uint16_t *)usb_tx_avg_buffer, strlen(usb_tx_avg_buffer));
+  printf("Average: %d\r\n", avg);
 
-  uint8_t msg[] = {0x1, 0x2, 0x3, 0x4};
-  uint8_t encrypted[4] = {0};
-  uint8_t decrypted[4] = {0};
+  // sprintf(usb_tx_avg_buffer, "Average: %d\r\n", avg);
+  // CDC_Transmit_FS((uint16_t *)usb_tx_avg_buffer, strlen(usb_tx_avg_buffer));
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -128,45 +132,34 @@ int main(void)
 
       uint16_t random_number = read_ring_oscillator();
 
-      char usb_tx_buffer[30];
-
-      sprintf(usb_tx_buffer, "Random number: %u\r\n", random_number);
-      CDC_Transmit_FS((uint16_t *)usb_tx_buffer, strlen(usb_tx_buffer));
+      printf("Random number: %u\r\n", random_number);
 
       HAL_Delay(2000);
 
       uint32_t key = key_gen32(random_number);
 
-      sprintf((char*)usb_tx_buffer, "Key: 0x%X\r\n", key);
-      CDC_Transmit_FS(usb_tx_buffer, strlen((char*)usb_tx_buffer));
+      printf("Key: 0x%X\r\n", key);
 
       HAL_Delay(2000);
 
       encrypt(msg, encrypted, 4, key);
       decrypt(encrypted, decrypted, 4, key);
 
-      char usb_tx11_buffer[30];
-      char usb_tx22_buffer[30];
-
-      sprintf(usb_tx11_buffer, "Size Of Encryption: %u\r\n", sizeof(encrypted));
+      printf("Size Of Encryption: %u\r\n", sizeof(encrypted));
       for (int i = 0; i < 4; i++) {
-        sprintf(usb_tx11_buffer + strlen(usb_tx11_buffer), "%02x ", encrypted[i]);
+        printf("%02x ", encrypted[i]);
       }
 
-      sprintf(usb_tx11_buffer + strlen(usb_tx11_buffer), "\r\n");
-
-      CDC_Transmit_FS((uint16_t *)usb_tx11_buffer, strlen(usb_tx11_buffer));
+      printf("\r\n");
 
       HAL_Delay(2000);
 
-      sprintf(usb_tx22_buffer, "Size of Decryption: %u\r\n", sizeof(decrypted));
+      printf("Size of Decryption: %u\r\n", sizeof(decrypted));
       for (int i = 0; i < 4; i++) {
-        sprintf(usb_tx22_buffer + strlen(usb_tx22_buffer), "%02x ", decrypted[i]);
+        printf("%02x ", decrypted[i]);
       }
 
-      CDC_Transmit_FS((uint16_t *)usb_tx22_buffer, strlen(usb_tx22_buffer));
-    
-
+      printf("\r\n");
     }
     /* USER CODE BEGIN 3 */
   }
@@ -266,6 +259,17 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+int _write(int file, char *data, int len) {
+
+  if (file == STDOUT_FILENO || file == STDERR_FILENO) {
+    CDC_Transmit_FS((uint16_t *)data, len);
+  }
+
+  return len;
+}
+
+
 void USB_CDC_RxHandler(uint8_t* Buf, uint32_t Len)
 {
     usb_rx_buffer = Buf[0];
@@ -299,8 +303,7 @@ uint16_t get_avg(uint16_t num) {
     for (int i = 0; i < num; i++) {
 
       uint16_t random_value = read_ring_oscillator();
-      sprintf(usb_tx2_avg_buffer, "TRNG Number: %d\r\n", random_value);
-      CDC_Transmit_FS((uint16_t *)usb_tx2_avg_buffer, strlen(usb_tx2_avg_buffer));
+      printf("TRNG Number: %d\r\n", random_value);
       sum += random_value;
       n++;
       HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);

@@ -39,5 +39,4 @@ mx.scratch
 .settings/
 
 # VSCode specific                                                   
-.vscode/
 *.code-workspace

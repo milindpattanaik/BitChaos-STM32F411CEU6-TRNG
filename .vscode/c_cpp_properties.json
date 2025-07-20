@@ -1,0 +1,33 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "STM32-Debug",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "intelliSenseMode": "${default}",
+            "compileCommands": "${workspaceFolder}/build/Debug/compile_commands.json",
+            "cStandard": "c23"
+        },
+        {
+            "name": "STM32-RelWithDebInfo",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "intelliSenseMode": "${default}",
+            "compileCommands": "${workspaceFolder}/build/RelWithDebInfo/compile_commands.json",
+            "cStandard": "c23"
+        },
+        {
+            "name": "STM32-Release",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "intelliSenseMode": "${default}",
+            "compileCommands": "${workspaceFolder}/build/Release/compile_commands.json",
+            "cStandard": "c23"
+        },
+        {
+            "name": "STM32-MinSizeRel",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "intelliSenseMode": "${default}",
+            "compileCommands": "${workspaceFolder}/build/MinSizeRel/compile_commands.json",
+            "cStandard": "c23"
+        }
+    ]
+}
